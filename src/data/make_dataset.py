@@ -6,6 +6,7 @@ import click
 from dotenv import find_dotenv, load_dotenv
 
 import pandas as pd
+import unidecode
 
 from nltk.corpus import stopwords
 from nltk.stem import PorterStemmer, WordNetLemmatizer
@@ -30,8 +31,27 @@ def stemmear_o_lematizar_texto(texto, stem_o_lema):
     elif stem_o_lema == "lema":
         motor = WordNetLemmatizer()
         palabras_reducidas = [motor.lemmatize(palabra, "v") for palabra in tokens]
+    
+    texto_juntado = " ".join(palabras_reducidas)
 
-    return palabras_reducidas
+    return texto_juntado
+
+
+def preprocesar_diags_congenitos(df, stem_o_lema):
+    df_preprocesada = df.copy()
+
+    col_diags = df_preprocesada["DIAGNOSTICO PRINCIPAL"]
+    col_diags = (
+        col_diags.dropna()
+        .str.strip()
+        .str.lower()
+        .apply(unidecode.unidecode)
+        .apply(lambda x: stemmear_o_lematizar_texto(x, stem_o_lema))
+    )
+
+    df_preprocesada["DIAGNOSTICO PRINCIPAL"] = col_diags
+
+    return df_preprocesada
 
 
 @click.command()
@@ -45,6 +65,8 @@ def main(input_filepath, output_filepath):
     logger.info("making final data set from raw data")
 
     df = pd.read_excel(input_filepath)
+    procesada = preprocesar_diags_congenitos(df, "lema")
+    procesada.to_csv(output_filepath, encoding="latin-1", index=False, sep=";", errors="replace")
 
 
 if __name__ == "__main__":
