@@ -45,6 +45,7 @@ def preprocesar_diags_congenitos(df, stem_o_lema):
         col_diags.dropna()
         .str.strip()
         .str.lower()
+        .apply(lambda x: filtrar_palabras_stopword(x, "spanish"))
         .apply(unidecode.unidecode)
         .apply(lambda x: stemmear_o_lematizar_texto(x, stem_o_lema))
     )
