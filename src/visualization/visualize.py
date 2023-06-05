@@ -57,6 +57,7 @@ def graficar_distribucion_variable_numerica(serie_numerica, nombre_grafico):
     """
     fig, axis = plt.subplots(1, 2)
     print("-----------------------------------------")
+    print(f"Analizando {nombre_grafico}")
     sns.histplot(data=serie_numerica, ax=axis[0])
     axis[0].axvline(serie_numerica.mean(), color="tomato")
     sns.boxplot(data=serie_numerica, ax=axis[1])
@@ -100,9 +101,10 @@ def graficar_distribucion_variable_categorica(serie_categorica, nombre_grafico):
         {"Frecuencia": frecuencias, "Porcentaje": porcentajes}, index=frecuencias.index
     )
     print("-----------------------------------------")
+    print(f"Analizando {nombre_grafico}")
     display(total)
 
-    sns.countplot(y=serie_categorica, order=frecuencias.index)
+    sns.countplot(y=serie_categorica, order=frecuencias.index[:60])
     plt.title(nombre_grafico)
     plt.show()
     print("-----------------------------------------")
