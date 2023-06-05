@@ -38,12 +38,11 @@ def stemmear_o_lematizar_texto(texto, stem_o_lema):
     return texto_juntado
 
 
-def preprocesar_diags_congenitos(df, stem_o_lema):
-    df_preprocesada = df.copy()
+def preprocesar_columna_texto(serie_texto, stem_o_lema):
+    copia_serie = serie_texto.copy()
 
-    col_diags = df_preprocesada["DIAGNOSTICO PRINCIPAL"]
-    col_diags = (
-        col_diags.dropna()
+    copia_serie = (
+        copia_serie.dropna()
         .str.strip()
         .str.lower()
         .apply(lambda x: filtrar_palabras_stopword(x, "spanish"))
@@ -51,9 +50,7 @@ def preprocesar_diags_congenitos(df, stem_o_lema):
         .apply(lambda x: stemmear_o_lematizar_texto(x, stem_o_lema))
     )
 
-    df_preprocesada["DIAGNOSTICO PRINCIPAL"] = col_diags
-
-    return df_preprocesada
+    return copia_serie
 
 
 def hashear_columnas_sensibles(df, cols_a_hashear):
@@ -79,9 +76,9 @@ def main(input_filepath, output_filepath):
     logger.info("making final data set from raw data")
 
     df = pd.read_excel(input_filepath)
-    procesada = preprocesar_diags_congenitos(df, "lema")
-    procesada = hashear_columnas_sensibles(procesada, ["Rut", "DIRECCION", "TELEFONO", "CORREO"])
-    procesada.to_csv(output_filepath, encoding="latin-1", index=False, sep=";", errors="replace")
+    df["DIAGNOSTICO PRINCIPAL"] = preprocesar_columna_texto(df["DIAGNOSTICO PRINCIPAL"], "lema")
+    df = hashear_columnas_sensibles(df, ["Rut", "DIRECCION", "TELEFONO", "CORREO"])
+    df.to_csv(output_filepath, encoding="latin-1", index=False, sep=";", errors="replace")
 
 
 if __name__ == "__main__":
