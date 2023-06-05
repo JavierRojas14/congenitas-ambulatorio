@@ -7,6 +7,7 @@ from dotenv import find_dotenv, load_dotenv
 
 import pandas as pd
 import unidecode
+import hashlib
 
 from nltk.corpus import stopwords
 from nltk.stem import PorterStemmer, WordNetLemmatizer
@@ -31,7 +32,7 @@ def stemmear_o_lematizar_texto(texto, stem_o_lema):
     elif stem_o_lema == "lema":
         motor = WordNetLemmatizer()
         palabras_reducidas = [motor.lemmatize(palabra, "v") for palabra in tokens]
-    
+
     texto_juntado = " ".join(palabras_reducidas)
 
     return texto_juntado
@@ -55,6 +56,18 @@ def preprocesar_diags_congenitos(df, stem_o_lema):
     return df_preprocesada
 
 
+def hashear_columnas_sensibles(df, cols_a_hashear):
+    df_preprocesada = df.copy()
+
+    df_preprocesada.loc[:, cols_a_hashear] = (
+        df_preprocesada.loc[:, cols_a_hashear]
+        .astype(str)
+        .applymap(lambda x: hashlib.sha512(x.encode()).hexdigest(), na_action="ignore")
+    )
+
+    return df_preprocesada
+
+
 @click.command()
 @click.argument("input_filepath", type=click.Path(exists=True))
 @click.argument("output_filepath", type=click.Path())
@@ -67,6 +80,7 @@ def main(input_filepath, output_filepath):
 
     df = pd.read_excel(input_filepath)
     procesada = preprocesar_diags_congenitos(df, "lema")
+    procesada = hashear_columnas_sensibles(procesada, ["Rut", "DIRECCION", "TELEFONO", "CORREO"])
     procesada.to_csv(output_filepath, encoding="latin-1", index=False, sep=";", errors="replace")
 
 
