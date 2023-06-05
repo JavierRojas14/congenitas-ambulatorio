@@ -104,7 +104,7 @@ def graficar_distribucion_variable_categorica(serie_categorica, nombre_grafico):
     print(f"Analizando {nombre_grafico}")
     display(total)
 
-    sns.countplot(y=serie_categorica, order=frecuencias.index[:60])
+    sns.countplot(y=serie_categorica, order=frecuencias.index[:15])
     plt.title(nombre_grafico)
     plt.show()
     print("-----------------------------------------")
