@@ -3,6 +3,7 @@ import logging
 from pathlib import Path
 
 import click
+import os
 from dotenv import find_dotenv, load_dotenv
 
 import pandas as pd
@@ -11,6 +12,11 @@ import hashlib
 
 from nltk.corpus import stopwords
 from nltk.stem import PorterStemmer, WordNetLemmatizer
+
+load_dotenv(find_dotenv())
+
+COLS_A_PREPROCESAR_TEXTO = os.environ.get("COLS_A_PREPROCESAR_TEXTO").split(",")
+COLS_INFO_SENSIBLE = os.environ.get("COLS_INFO_SENSIBLE").split(",")
 
 
 def filtrar_palabras_stopword(texto, idioma_palabras_stopword):
@@ -39,10 +45,10 @@ def stemmear_o_lematizar_texto(texto, stem_o_lema):
 
 
 def preprocesar_columna_texto(serie_texto, stem_o_lema):
-    copia_serie = serie_texto.copy()
+    serie_limpia = serie_texto.copy()
 
-    copia_serie = (
-        copia_serie.dropna()
+    serie_limpia = (
+        serie_limpia.dropna()
         .str.strip()
         .str.lower()
         .apply(lambda x: filtrar_palabras_stopword(x, "spanish"))
@@ -50,20 +56,17 @@ def preprocesar_columna_texto(serie_texto, stem_o_lema):
         .apply(lambda x: stemmear_o_lematizar_texto(x, stem_o_lema))
     )
 
-    return copia_serie
+    return serie_limpia
 
 
-def hashear_columnas_sensibles(df, cols_a_hashear):
-    df_preprocesada = df.copy()
+def hashear_columna_texto(serie_texto):
+    serie_hasheada = serie_texto.copy()
 
-    df_preprocesada.loc[:, cols_a_hashear] = (
-        df_preprocesada.loc[:, cols_a_hashear]
-        .astype(str)
-        .applymap(lambda x: hashlib.sha512(x.encode()).hexdigest(), na_action="ignore")
+    serie_hasheada = serie_hasheada.astype(str).apply(
+        lambda x: hashlib.sha512(x.encode()).hexdigest(), na_action="ignore"
     )
 
-    return df_preprocesada
-
+    return serie_hasheada
 
 @click.command()
 @click.argument("input_filepath", type=click.Path(exists=True))
@@ -77,8 +80,8 @@ def main(input_filepath, output_filepath):
 
     df = pd.read_excel(input_filepath)
     df = df.dropna(how="all")
-    df["DIAGNOSTICO PRINCIPAL"] = preprocesar_columna_texto(df["DIAGNOSTICO PRINCIPAL"], "lema")
-    df = hashear_columnas_sensibles(df, ["Rut", "DIRECCION", "TELEFONO", "CORREO"])
+    df = preprocesar_columnas_texto(df, cols_para_limpiar_texto, "lema")
+    df = hashear_columnas_sensibles(df, cols_para_hashear)
     df.to_csv(output_filepath, encoding="latin-1", index=False, sep=";", errors="replace")
 
 
