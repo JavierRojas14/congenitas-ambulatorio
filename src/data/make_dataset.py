@@ -29,31 +29,26 @@ def filtrar_palabras_stopword(texto, idioma_palabras_stopword):
     return texto_juntado
 
 
-def stemmear_o_lematizar_texto(texto, stem_o_lema):
+def lematizar_texto(texto):
     tokens = texto.split()
-    if stem_o_lema == "stem":
-        motor = PorterStemmer()
-        palabras_reducidas = [motor.stem(palabra, "v") for palabra in tokens]
-
-    elif stem_o_lema == "lema":
-        motor = WordNetLemmatizer()
-        palabras_reducidas = [motor.lemmatize(palabra, "v") for palabra in tokens]
-
+    motor = WordNetLemmatizer()
+    palabras_reducidas = [motor.lemmatize(palabra, "v") for palabra in tokens]
     texto_juntado = " ".join(palabras_reducidas)
 
     return texto_juntado
 
 
-def preprocesar_columna_texto(serie_texto, stem_o_lema):
+def preprocesar_columna_texto(serie_texto):
     serie_limpia = serie_texto.copy()
 
     serie_limpia = (
         serie_limpia.dropna()
+        .astype(str)
         .str.strip()
         .str.lower()
         .apply(lambda x: filtrar_palabras_stopword(x, "spanish"))
         .apply(unidecode.unidecode)
-        .apply(lambda x: stemmear_o_lematizar_texto(x, stem_o_lema))
+        .apply(lematizar_texto)
     )
 
     return serie_limpia
@@ -63,10 +58,11 @@ def hashear_columna_texto(serie_texto):
     serie_hasheada = serie_texto.copy()
 
     serie_hasheada = serie_hasheada.astype(str).apply(
-        lambda x: hashlib.sha512(x.encode()).hexdigest(), na_action="ignore"
+        lambda x: hashlib.sha512(x.encode()).hexdigest()
     )
 
     return serie_hasheada
+
 
 @click.command()
 @click.argument("input_filepath", type=click.Path(exists=True))
@@ -80,8 +76,11 @@ def main(input_filepath, output_filepath):
 
     df = pd.read_excel(input_filepath)
     df = df.dropna(how="all")
-    df = preprocesar_columnas_texto(df, cols_para_limpiar_texto, "lema")
-    df = hashear_columnas_sensibles(df, cols_para_hashear)
+    df.loc[:, COLS_A_PREPROCESAR_TEXTO] = df.loc[:, COLS_A_PREPROCESAR_TEXTO].apply(
+        preprocesar_columna_texto
+    )
+    df.loc[:, COLS_INFO_SENSIBLE] = df.loc[:, COLS_INFO_SENSIBLE].apply(hashear_columna_texto)
+
     df.to_csv(output_filepath, encoding="latin-1", index=False, sep=";", errors="replace")
 
 
