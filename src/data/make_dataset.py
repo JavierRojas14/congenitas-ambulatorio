@@ -76,6 +76,7 @@ def main(input_filepath, output_filepath):
     logger.info("making final data set from raw data")
 
     df = pd.read_excel(input_filepath)
+    df = df.dropna(how="all")
     df["DIAGNOSTICO PRINCIPAL"] = preprocesar_columna_texto(df["DIAGNOSTICO PRINCIPAL"], "lema")
     df = hashear_columnas_sensibles(df, ["Rut", "DIRECCION", "TELEFONO", "CORREO"])
     df.to_csv(output_filepath, encoding="latin-1", index=False, sep=";", errors="replace")
