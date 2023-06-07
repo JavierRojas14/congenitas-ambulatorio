@@ -11,7 +11,7 @@ import unidecode
 import hashlib
 
 from nltk.corpus import stopwords
-from nltk.stem import PorterStemmer, WordNetLemmatizer
+from nltk.stem import WordNetLemmatizer
 
 load_dotenv(find_dotenv())
 
