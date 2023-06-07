@@ -126,7 +126,8 @@ def main(input_filepath, output_filepath):
         preprocesar_columna_texto
     )
     df.loc[:, COLS_INFO_SENSIBLE] = df.loc[:, COLS_INFO_SENSIBLE].apply(hashear_columna_texto)
-    df["FECHA 1º evaluación"] = df["FECHA 1º evaluación"].replace(TRANSFORMACION_FECHAS)
+    df["FECHA 1º evaluación"] = pd.to_datetime(df["FECHA 1º evaluación"].replace(TRANSFORMACION_FECHAS),
+                                               dayfirst=True)
 
     df.to_csv(output_filepath, encoding="latin-1", index=False, sep=";", errors="replace")
 
