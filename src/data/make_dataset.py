@@ -7,6 +7,7 @@ import os
 from dotenv import find_dotenv, load_dotenv
 
 import pandas as pd
+import numpy as np
 import unidecode
 import hashlib
 
@@ -17,6 +18,7 @@ load_dotenv(find_dotenv())
 
 COLS_A_PREPROCESAR_TEXTO = os.environ.get("COLS_A_PREPROCESAR_TEXTO").split(",")
 COLS_INFO_SENSIBLE = os.environ.get("COLS_INFO_SENSIBLE").split(",")
+RUT_EN_FECHA = os.environ.get("RUT_EN_FECHA")
 TRANSFORMACION_FECHAS = {
     "25-8-2020 (Presencial)": "25/08/2020",
     "21 julio 2020 (Politelefonico por Contingencia)": "21/07/2020",
@@ -124,6 +126,7 @@ def main(input_filepath, output_filepath):
         preprocesar_columna_texto
     )
     df.loc[:, COLS_INFO_SENSIBLE] = df.loc[:, COLS_INFO_SENSIBLE].apply(hashear_columna_texto)
+    df["FECHA 1º evaluación"] = df["FECHA 1º evaluación"].replace(TRANSFORMACION_FECHAS)
 
     df.to_csv(output_filepath, encoding="latin-1", index=False, sep=";", errors="replace")
 
