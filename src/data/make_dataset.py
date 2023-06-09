@@ -121,13 +121,16 @@ def main(input_filepath, output_filepath):
     logger.info("making final data set from raw data")
 
     df = pd.read_excel(input_filepath)
+
     df = df.dropna(how="all")
     df.loc[:, COLS_A_PREPROCESAR_TEXTO] = df.loc[:, COLS_A_PREPROCESAR_TEXTO].apply(
         preprocesar_columna_texto
     )
     df.loc[:, COLS_INFO_SENSIBLE] = df.loc[:, COLS_INFO_SENSIBLE].apply(hashear_columna_texto)
-    df["FECHA 1º evaluación"] = pd.to_datetime(df["FECHA 1º evaluación"].replace(TRANSFORMACION_FECHAS),
-                                               dayfirst=True)
+    df["FECHA 1º evaluación"] = pd.to_datetime(
+        df["FECHA 1º evaluación"].replace(TRANSFORMACION_FECHAS), dayfirst=True
+    )
+    df["ANIO_PRIMERA_EVALUACION"] = df["FECHA 1º evaluación"].dt.year.astype("Int16")
 
     df.to_csv(output_filepath, encoding="latin-1", index=False, sep=";", errors="replace")
 
