@@ -1,16 +1,14 @@
 # -*- coding: utf-8 -*-
+import hashlib
 import logging
+import os
 from pathlib import Path
 
 import click
-import os
-from dotenv import find_dotenv, load_dotenv
-
-import pandas as pd
 import numpy as np
+import pandas as pd
 import unidecode
-import hashlib
-
+from dotenv import find_dotenv, load_dotenv
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
 
