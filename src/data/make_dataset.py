@@ -125,7 +125,7 @@ def formatear_columnas_fecha_primera_evaluacion(df):
 
 
 def agregar_cie_para_glosa(df):
-    traductor_glosa_cie = pd.read_excel("data/raw/Trabajo Javier_V1_AH.xlsx").drop(
+    traductor_glosa_cie = pd.read_excel("data/external/Trabajo Javier_V1_AH.xlsx").drop(
         columns="cluster"
     )
     union = pd.merge(df, traductor_glosa_cie, how="left", on="DIAGNOSTICO PRINCIPAL")
