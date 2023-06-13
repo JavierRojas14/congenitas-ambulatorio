@@ -107,6 +107,21 @@ def hashear_columna_texto(serie_texto):
 
     return serie_hasheada
 
+def formatear_columnas_fecha_primera_evaluacion(df):
+    tmp = df.copy()
+
+    serie_fecha = df["FECHA 1º evaluación"]
+
+    fechas_reemplazadas = pd.to_datetime(serie_fecha.replace(TRANSFORMACION_FECHAS), dayfirst=True)
+    anio_primera_evaluacion = fechas_reemplazadas.dt.year
+    mes_primera_evaluacion = fechas_reemplazadas.dt.month
+
+    tmp["FECHA 1º evaluación"] = fechas_reemplazadas
+    tmp["ANIO_PRIMERA_EVALUACION"] = anio_primera_evaluacion
+    tmp["MES_PRIMERA_EVALUACION"] = mes_primera_evaluacion
+
+    return tmp
+
 
 @click.command()
 @click.argument("input_filepath", type=click.Path(exists=True))
@@ -125,11 +140,7 @@ def main(input_filepath, output_filepath):
         preprocesar_columna_texto
     )
     df.loc[:, COLS_INFO_SENSIBLE] = df.loc[:, COLS_INFO_SENSIBLE].apply(hashear_columna_texto)
-    df["FECHA 1º evaluación"] = pd.to_datetime(
-        df["FECHA 1º evaluación"].replace(TRANSFORMACION_FECHAS), dayfirst=True
-    )
-    df["ANIO_PRIMERA_EVALUACION"] = df["FECHA 1º evaluación"].dt.year.astype("Int16")
-    df["MES_PRIMERA_EVALUACION"] = df["FECHA 1º evaluación"].dt.month.astype("Int16")
+    df = formatear_columnas_fecha_primera_evaluacion(df)
 
     df.to_csv(output_filepath, encoding="latin-1", index=False, sep=";", errors="replace")
 
