@@ -107,6 +107,7 @@ def hashear_columna_texto(serie_texto):
 
     return serie_hasheada
 
+
 def formatear_columnas_fecha_primera_evaluacion(df):
     tmp = df.copy()
 
@@ -121,6 +122,15 @@ def formatear_columnas_fecha_primera_evaluacion(df):
     tmp["MES_PRIMERA_EVALUACION"] = mes_primera_evaluacion
 
     return tmp
+
+
+def agregar_cie_para_glosa(df):
+    traductor_glosa_cie = pd.read_excel("data/raw/Trabajo Javier_V1_AH.xlsx").drop(
+        columns="cluster"
+    )
+    union = pd.merge(df, traductor_glosa_cie, how="left", on="DIAGNOSTICO PRINCIPAL")
+
+    return union
 
 
 @click.command()
@@ -141,6 +151,7 @@ def main(input_filepath, output_filepath):
     )
     df.loc[:, COLS_INFO_SENSIBLE] = df.loc[:, COLS_INFO_SENSIBLE].apply(hashear_columna_texto)
     df = formatear_columnas_fecha_primera_evaluacion(df)
+    df = agregar_cie_para_glosa(df)
 
     df.to_csv(output_filepath, encoding="latin-1", index=False, sep=";", errors="replace")
 
