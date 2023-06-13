@@ -129,6 +129,7 @@ def main(input_filepath, output_filepath):
         df["FECHA 1º evaluación"].replace(TRANSFORMACION_FECHAS), dayfirst=True
     )
     df["ANIO_PRIMERA_EVALUACION"] = df["FECHA 1º evaluación"].dt.year.astype("Int16")
+    df["MES_PRIMERA_EVALUACION"] = df["FECHA 1º evaluación"].dt.month.astype("Int16")
 
     df.to_csv(output_filepath, encoding="latin-1", index=False, sep=";", errors="replace")
 
