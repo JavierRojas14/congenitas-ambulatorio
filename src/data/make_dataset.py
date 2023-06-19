@@ -62,6 +62,11 @@ TRANSFORMACION_FECHAS = {
     "15/10/013": "15/10/2013",
 }
 
+TRANSFORMACION_SEXO = {
+    "df": "f",
+    "b": "m",
+}
+
 
 def filtrar_palabras_stopword(texto, idioma_palabras_stopword):
     stopwords_elegidas = set(stopwords.words(idioma_palabras_stopword))
@@ -150,6 +155,7 @@ def main(input_filepath, output_filepath):
         preprocesar_columna_texto
     )
     df.loc[:, COLS_INFO_SENSIBLE] = df.loc[:, COLS_INFO_SENSIBLE].apply(hashear_columna_texto)
+    df["SEXO"] = df["SEXO"].replace(TRANSFORMACION_SEXO)
     df = formatear_columnas_fecha_primera_evaluacion(df)
     df = agregar_cie_para_glosa(df)
 
