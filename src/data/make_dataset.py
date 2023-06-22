@@ -63,6 +63,10 @@ TRANSFORMACION_FECHAS_PRIMERA_CONSULTA = {
     "15/10/013": "15/10/2013",
 }
 
+TRANSFORMACION_FECHAS_NACIMIENTO = {
+    "26/002/1961": "26/02/1961"
+}
+
 TRANSFORMACION_SEXO = {
     "df": "f",
     "b": "m",
@@ -129,12 +133,19 @@ def formatear_columnas_fecha_primera_evaluacion(df):
 
     return tmp
 
-
 def agregar_cie_para_glosa(df):
     traductor_glosa_cie = pd.read_excel("data/external/Trabajo Javier_V1_AH.xlsx").drop(
         columns="cluster"
     )
     union = pd.merge(df, traductor_glosa_cie, how="left", on="DIAGNOSTICO PRINCIPAL")
+    union = agregar_info_codigo_cie(union, "validacion")
+
+    return union
+
+def agregar_info_codigo_cie(df, columna_con_cie):
+    cie = pd.read_excel("../data/external/CIE-10.xlsx")
+
+    union = pd.merge(df, cie, how="left", left_on=columna_con_cie, right_on="Código")
 
     return union
 
