@@ -70,6 +70,7 @@ TRANSFORMACION_SEXO = {
 
 def filtrar_palabras_stopword(texto, idioma_palabras_stopword):
     stopwords_elegidas = set(stopwords.words(idioma_palabras_stopword))
+    stopwords_elegidas.remove("a")
 
     tokens = texto.split()
     filtro_stop_words = [palabra for palabra in tokens if palabra not in stopwords_elegidas]
