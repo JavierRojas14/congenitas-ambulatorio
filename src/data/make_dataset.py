@@ -143,7 +143,7 @@ def agregar_cie_para_glosa(df):
     return union
 
 def agregar_info_codigo_cie(df, columna_con_cie):
-    cie = pd.read_excel("../data/external/CIE-10.xlsx")
+    cie = pd.read_excel("data/external/CIE-10.xlsx")
 
     union = pd.merge(df, cie, how="left", left_on=columna_con_cie, right_on="Código")
 
