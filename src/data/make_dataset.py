@@ -64,7 +64,9 @@ TRANSFORMACION_FECHAS_PRIMERA_CONSULTA = {
 }
 
 TRANSFORMACION_FECHAS_NACIMIENTO = {
-    "26/002/1961": "26/02/1961"
+    "26/002/1961": "1961/02/26",
+    "01/11991": "1991/01/01",
+    "...": np.nan,
 }
 
 TRANSFORMACION_SEXO = {
@@ -123,7 +125,9 @@ def formatear_columnas_fecha_primera_evaluacion(df):
 
     serie_fecha = df["FECHA 1º evaluación"]
 
-    fechas_reemplazadas = pd.to_datetime(serie_fecha.replace(TRANSFORMACION_FECHAS_PRIMERA_CONSULTA), dayfirst=True)
+    fechas_reemplazadas = pd.to_datetime(
+        serie_fecha.replace(TRANSFORMACION_FECHAS_PRIMERA_CONSULTA), dayfirst=True
+    )
     anio_primera_evaluacion = fechas_reemplazadas.dt.year
     mes_primera_evaluacion = fechas_reemplazadas.dt.month
 
@@ -133,6 +137,21 @@ def formatear_columnas_fecha_primera_evaluacion(df):
 
     return tmp
 
+
+def formatear_columnas_fecha_nacimiento(df):
+    tmp = df.copy()
+
+    serie_fecha = df["F NAC"]
+
+    fechas_reemplazadas = pd.to_datetime(
+        serie_fecha.replace(TRANSFORMACION_FECHAS_NACIMIENTO), yearfirst=True
+    )
+
+    tmp["F NAC"] = fechas_reemplazadas
+
+    return tmp
+
+
 def agregar_cie_para_glosa(df):
     traductor_glosa_cie = pd.read_excel("data/external/Trabajo Javier_V1_AH.xlsx").drop(
         columns="cluster"
@@ -141,6 +160,7 @@ def agregar_cie_para_glosa(df):
     union = agregar_info_codigo_cie(union, "validacion")
 
     return union
+
 
 def agregar_info_codigo_cie(df, columna_con_cie):
     cie = pd.read_excel("data/external/CIE-10.xlsx")
@@ -169,6 +189,7 @@ def main(input_filepath, output_filepath):
     df.loc[:, COLS_INFO_SENSIBLE] = df.loc[:, COLS_INFO_SENSIBLE].apply(hashear_columna_texto)
     df["SEXO"] = df["SEXO"].replace(TRANSFORMACION_SEXO)
     df = formatear_columnas_fecha_primera_evaluacion(df)
+    df = formatear_columnas_fecha_nacimiento(df)
     df = agregar_cie_para_glosa(df)
 
     df.to_csv(output_filepath, encoding="latin-1", index=False, sep=";", errors="replace")
