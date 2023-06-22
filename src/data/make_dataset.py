@@ -17,7 +17,8 @@ load_dotenv(find_dotenv())
 COLS_A_PREPROCESAR_TEXTO = os.environ.get("COLS_A_PREPROCESAR_TEXTO").split(",")
 COLS_INFO_SENSIBLE = os.environ.get("COLS_INFO_SENSIBLE").split(",")
 RUT_EN_FECHA = os.environ.get("RUT_EN_FECHA")
-TRANSFORMACION_FECHAS = {
+
+TRANSFORMACION_FECHAS_PRIMERA_CONSULTA = {
     "25-8-2020 (Presencial)": "25/08/2020",
     "21 julio 2020 (Politelefonico por Contingencia)": "21/07/2020",
     "25 agosto 2020 (Presencial)": "25/08/2020",
@@ -118,7 +119,7 @@ def formatear_columnas_fecha_primera_evaluacion(df):
 
     serie_fecha = df["FECHA 1º evaluación"]
 
-    fechas_reemplazadas = pd.to_datetime(serie_fecha.replace(TRANSFORMACION_FECHAS), dayfirst=True)
+    fechas_reemplazadas = pd.to_datetime(serie_fecha.replace(TRANSFORMACION_FECHAS_PRIMERA_CONSULTA), dayfirst=True)
     anio_primera_evaluacion = fechas_reemplazadas.dt.year
     mes_primera_evaluacion = fechas_reemplazadas.dt.month
 
