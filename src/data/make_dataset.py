@@ -152,14 +152,16 @@ def formatear_columnas_fecha_nacimiento(df):
     return tmp
 
 
-def agregar_cie_para_glosa(df):
-    traductor_glosa_cie = pd.read_excel("data/external/Trabajo Javier_V1_AH.xlsx").drop(
-        columns="cluster"
-    )
-    union = pd.merge(df, traductor_glosa_cie, how="left", on="DIAGNOSTICO PRINCIPAL")
-    union = agregar_info_codigo_cie(union, "validacion")
+def recodificar_cols_dict_de_congenitas(df):
+    tmp = df.copy()
 
-    return union
+    traductor_congenitas = pd.ExcelFile("data/external/Trabajo Javier_V1_AH.xlsx")
+    cols_a_recodificar = ["DIAGNOSTICO PRINCIPAL", "Region", "Clasificación", "Complejidad"]
+    for col in cols_a_recodificar:
+        df_traductor = pd.read_excel(traductor_congenitas, sheet_name=col).drop(columns="cluster")
+        tmp = pd.merge(tmp, df_traductor, how="left", on=col, suffixes=("", f"_{col}"))
+
+    return tmp
 
 
 def agregar_info_codigo_cie(df, columna_con_cie):
@@ -190,7 +192,7 @@ def main(input_filepath, output_filepath):
     df["SEXO"] = df["SEXO"].replace(TRANSFORMACION_SEXO)
     df = formatear_columnas_fecha_primera_evaluacion(df)
     df = formatear_columnas_fecha_nacimiento(df)
-    df = agregar_cie_para_glosa(df)
+    df = recodificar_cols_dict_de_congenitas(df)
 
     df.to_csv(output_filepath, encoding="latin-1", index=False, sep=";", errors="replace")
 
