@@ -1,5 +1,6 @@
 import Levenshtein
 import pandas as pd
+import numpy as np
 
 from nltk.corpus import stopwords
 from sklearn.feature_extraction.text import CountVectorizer
@@ -53,6 +54,9 @@ def obtener_dfs_para_desglose_sociodemografico(df, vars_groupby_estatico, vars_g
         resultado["llave_id"] = (
             resultado[cols_para_llave].astype(str).apply(lambda x: "-".join(x), axis=1)
         )
+
+        resultado = resultado.replace("SO", np.nan)
+        resultado = resultado.replace("nan", np.nan)
 
         dict_resultado[variable] = resultado
 
