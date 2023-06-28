@@ -203,7 +203,7 @@ def main(input_filepath, output_filepath):
         + ["F NAC", "FECHA 1º evaluación", "ANIO_PRIMERA_EVALUACION", "MES_PRIMERA_EVALUACION"]
     ]
 
-    df.to_csv(output_filepath, index=False, errors="replace")
+    df.to_csv(output_filepath, index=False, errors="replace", encoding="latin-1", sep=";")
 
 
 if __name__ == "__main__":
