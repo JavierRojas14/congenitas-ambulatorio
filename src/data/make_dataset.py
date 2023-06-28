@@ -196,8 +196,14 @@ def main(input_filepath, output_filepath):
     df = formatear_columnas_fecha_nacimiento(df)
     df = recodificar_cols_dict_de_congenitas(df)
     df = df.dropna(subset="DIAGNOSTICO PRINCIPAL")
+    df = df[
+        ["Rut"]
+        + COLS_A_PREPROCESAR_TEXTO
+        + ["validacion", "validacion_Region", "validacion_Clasificación", "validacion_Complejidad"]
+        + ["F NAC", "FECHA 1º evaluación", "ANIO_PRIMERA_EVALUACION", "MES_PRIMERA_EVALUACION"]
+    ]
 
-    df.to_csv(output_filepath, encoding="latin-1", index=False, sep=";", errors="replace")
+    df.to_csv(output_filepath, index=False, errors="replace")
 
 
 if __name__ == "__main__":
