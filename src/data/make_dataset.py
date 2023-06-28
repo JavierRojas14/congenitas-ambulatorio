@@ -185,6 +185,8 @@ def main(input_filepath, output_filepath):
     df = pd.read_excel(input_filepath)
 
     df = df.dropna(how="all")
+    df = df.dropna(how="all", axis=1)
+
     df.loc[:, COLS_A_PREPROCESAR_TEXTO] = df.loc[:, COLS_A_PREPROCESAR_TEXTO].apply(
         preprocesar_columna_texto
     )
@@ -193,6 +195,7 @@ def main(input_filepath, output_filepath):
     df = formatear_columnas_fecha_primera_evaluacion(df)
     df = formatear_columnas_fecha_nacimiento(df)
     df = recodificar_cols_dict_de_congenitas(df)
+    df = df.dropna(subset="DIAGNOSTICO PRINCIPAL")
 
     df.to_csv(output_filepath, encoding="latin-1", index=False, sep=";", errors="replace")
 
