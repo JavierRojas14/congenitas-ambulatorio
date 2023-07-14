@@ -172,6 +172,24 @@ def agregar_info_codigo_cie(df, columna_con_cie):
     return union
 
 
+def clean_column_names(df):
+    tmp = df.copy()
+
+    # Clean and transform the column names using vectorization
+    cleaned_columns = (
+        df.columns.str.lower()
+        .str.normalize("NFD")
+        .str.encode("ascii", "ignore")
+        .str.decode("utf-8")
+    )
+    cleaned_columns = cleaned_columns.str.replace(" ", "_")
+
+    # Assign the cleaned column names back to the DataFrame
+    tmp.columns = cleaned_columns
+
+    return tmp
+
+
 @click.command()
 @click.argument("input_filepath", type=click.Path(exists=True))
 @click.argument("output_filepath", type=click.Path())
@@ -202,6 +220,8 @@ def main(input_filepath, output_filepath):
         + ["validacion", "validacion_Region", "validacion_Clasificación", "validacion_Complejidad"]
         + ["F NAC", "FECHA 1º evaluación", "ANIO_PRIMERA_EVALUACION", "MES_PRIMERA_EVALUACION"]
     ]
+
+    df = clean_column_names(df)
 
     df.to_csv(output_filepath, index=False, errors="replace", encoding="latin-1", sep=";")
 
