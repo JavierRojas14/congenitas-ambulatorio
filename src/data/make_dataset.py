@@ -74,10 +74,10 @@ TRANSFORMACION_SEXO = {
     "b": "m",
 }
 
+STOPWORDS_ESPANOL = set(stopwords.words("spanish"))
 
-def filtrar_palabras_stopword(texto, idioma_palabras_stopword):
-    stopwords_elegidas = set(stopwords.words(idioma_palabras_stopword))
 
+def filtrar_palabras_stopword(texto, stopwords_elegidas):
     tokens = texto.split()
     filtro_stop_words = [palabra for palabra in tokens if palabra not in stopwords_elegidas]
     texto_juntado = " ".join(filtro_stop_words)
@@ -96,13 +96,18 @@ def lematizar_texto(texto):
 
 def preprocesar_columna_texto(serie_texto):
     serie_limpia = serie_texto.copy()
+    if serie_texto.name != "PREVISION":
+        palabras_filtro = STOPWORDS_ESPANOL
+    
+    else:
+        palabras_filtro = STOPWORDS_ESPANOL - {"a"}
 
     serie_limpia = (
         serie_limpia.dropna()
         .astype(str)
         .str.strip()
         .str.lower()
-        .apply(lambda x: filtrar_palabras_stopword(x, "spanish"))
+        .apply(lambda x: filtrar_palabras_stopword(x, palabras_filtro))
         .apply(unidecode.unidecode)
         .apply(lematizar_texto)
     )
