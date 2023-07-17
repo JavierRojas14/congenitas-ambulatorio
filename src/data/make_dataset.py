@@ -98,7 +98,7 @@ def preprocesar_columna_texto(serie_texto):
     serie_limpia = serie_texto.copy()
     if serie_texto.name != "PREVISION":
         palabras_filtro = STOPWORDS_ESPANOL
-    
+
     else:
         palabras_filtro = STOPWORDS_ESPANOL - {"a"}
 
@@ -183,6 +183,7 @@ def clean_column_names(df):
     # Clean and transform the column names using vectorization
     cleaned_columns = (
         df.columns.str.lower()
+        .str.strip()
         .str.normalize("NFD")
         .str.encode("ascii", "ignore")
         .str.decode("utf-8")
