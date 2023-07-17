@@ -224,7 +224,6 @@ def main(input_filepath, output_filepath):
     df = df[
         ["Rut"]
         + COLS_A_PREPROCESAR_TEXTO
-        + ["DIAGNOSTICO PRINCIPAL", "Region", "Clasificación", "Complejidad"]
         + ["F NAC", "FECHA 1º evaluación", "ANIO_PRIMERA_EVALUACION", "MES_PRIMERA_EVALUACION"]
     ]
 
