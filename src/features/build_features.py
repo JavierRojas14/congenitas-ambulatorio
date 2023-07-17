@@ -39,24 +39,27 @@ def agrupar_textos_en_columna(serie_texto):
 
 def obtener_dfs_para_desglose_sociodemografico(df, vars_groupby_estatico, vars_groupby_dinamico):
     dict_resultado = {}
-    cols_para_llave = vars_groupby_estatico + ["validacion"]
+    cols_para_llave = vars_groupby_estatico + ["diagnostico_principal"]
     for variable in vars_groupby_dinamico:
         nuevo_desglose = vars_groupby_estatico + [variable]
-        if variable == "validacion":
+        if variable == "diagnostico_principal":
             nuevo_desglose.pop()
 
         resultado = (
-            df.groupby(nuevo_desglose, dropna=True)["validacion"]
+            df.groupby(nuevo_desglose, dropna=True)["diagnostico_principal"]
             .value_counts()
             .reset_index(name="conteo")
         )
 
         resultado["llave_id"] = (
-            resultado[cols_para_llave].astype(str).apply(lambda x: "-".join(x), axis=1)
+            resultado[cols_para_llave].astype(str).apply("-".join, axis=1)
         )
 
         resultado = resultado.replace("SO", np.nan)
         resultado = resultado.replace("nan", np.nan)
+
+        if variable != "diagnostico_principal":
+            resultado = resultado.drop(columns=cols_para_llave)
 
         dict_resultado[variable] = resultado
 
