@@ -164,7 +164,8 @@ def recodificar_cols_dict_de_congenitas(df):
     cols_a_recodificar = ["DIAGNOSTICO PRINCIPAL", "Region", "Clasificación", "Complejidad"]
     for col in cols_a_recodificar:
         df_traductor = pd.read_excel(traductor_congenitas, sheet_name=col).drop(columns="cluster")
-        tmp = pd.merge(tmp, df_traductor, how="left", on=col, suffixes=("", f"_{col}"))
+        diccionario = df_traductor.set_index(col)["validacion"].to_dict()
+        tmp[col] = tmp[col].replace(diccionario)
 
     return tmp
 
@@ -223,7 +224,7 @@ def main(input_filepath, output_filepath):
     df = df[
         ["Rut"]
         + COLS_A_PREPROCESAR_TEXTO
-        + ["validacion", "validacion_Region", "validacion_Clasificación", "validacion_Complejidad"]
+        + ["DIAGNOSTICO PRINCIPAL", "Region", "Clasificación", "Complejidad"]
         + ["F NAC", "FECHA 1º evaluación", "ANIO_PRIMERA_EVALUACION", "MES_PRIMERA_EVALUACION"]
     ]
 
