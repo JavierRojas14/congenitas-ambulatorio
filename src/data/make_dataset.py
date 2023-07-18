@@ -161,7 +161,13 @@ def recodificar_cols_dict_de_congenitas(df):
     tmp = df.copy()
 
     traductor_congenitas = pd.ExcelFile("data/external/Trabajo Javier_V1_AH.xlsx")
-    cols_a_recodificar = ["DIAGNOSTICO PRINCIPAL", "Region", "Clasificación", "Complejidad"]
+    cols_a_recodificar = [
+        "DIAGNOSTICO PRINCIPAL",
+        "Region",
+        "Clasificación",
+        "Complejidad",
+        "PREVISION",
+    ]
     for col in cols_a_recodificar:
         df_traductor = pd.read_excel(traductor_congenitas, sheet_name=col).drop(columns="cluster")
         diccionario = df_traductor.set_index(col)["validacion"].to_dict()
