@@ -178,7 +178,7 @@ def recodificar_cols_dict_de_congenitas(df):
     traductor_congenitas = pd.ExcelFile("data/external/Trabajo Javier_V1_AH.xlsx")
     cols_a_recodificar = [
         "diagnostico_principal",
-        "region",
+        # "region",
         "clasificacion",
         "complejidad",
         "prevision",
@@ -254,6 +254,7 @@ def procesar_base_de_congenitas(input_filepath):
 
     # Formatea columna de primera evaluacion
     df["fecha_1_evaluacion"] = formatear_fecha_primera_evaluacion(df["fecha_1_evaluacion"])
+    df["anio_1_evaluacion"] = df["fecha_1_evaluacion"].dt.year
 
     # Formatea columna de fecha de nacimiento
     df["f_nac"] = formatear_fecha_nacimiento(df["f_nac"])
@@ -263,11 +264,14 @@ def procesar_base_de_congenitas(input_filepath):
 
     # Elimina registros sin diagnostico principal
     df = df.dropna(subset="diagnostico_principal")
-    # df = df[
-    #     ["Rut"]
-    #     + COLS_A_PREPROCESAR_TEXTO
-    #     + ["F NAC", "FECHA 1º evaluación", "ANIO_PRIMERA_EVALUACION", "MES_PRIMERA_EVALUACION"]
-    # ]
+
+    # Filtra solamente las columnas a utilizar
+    df = df[
+        ["rut"] + COLS_A_PREPROCESAR_TEXTO + ["f_nac", "fecha_1_evaluacion", "anio_1_evaluacion"]
+    ]
+
+    # Ordena por la fecha de la primera atencion
+    df = df.sort_values("fecha_1_evaluacion")
 
     return df
 
@@ -287,7 +291,7 @@ def main(input_filepath, output_filepath):
 
     # Guarda la base de datos procesada
     ruta_output = f"{output_filepath}/df_procesada.csv"
-    df.to_csv(ruta_output, index=False, errors="replace", encoding="latin-1", sep=";")
+    df.to_csv(ruta_output, index=False)
 
 
 if __name__ == "__main__":
