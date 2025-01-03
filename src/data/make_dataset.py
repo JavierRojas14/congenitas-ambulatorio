@@ -20,9 +20,9 @@ COLS_A_PREPROCESAR_TEXTO = [
     "sexo",
     "prevision",
     "centro_referencia",
-    "cie10",
-    "cie11",
-    # "Region",  #
+    # "cie10",
+    # "cie11",
+    "region",
     "clasificacion",
     "procedimiento",
     "complejidad",
@@ -180,7 +180,7 @@ def recodificar_cols_dict_de_congenitas(df):
     traductor_congenitas = pd.ExcelFile("data/external/Trabajo Javier_V1_AH.xlsx")
     cols_a_recodificar = [
         "diagnostico_principal",
-        # "region",
+        "region",
         "clasificacion",
         "complejidad",
         "prevision",
@@ -236,7 +236,7 @@ def clean_column_names(df):
 
 def procesar_base_de_congenitas(input_filepath):
     # Carga la base de datos
-    ruta_archivo = f"{input_filepath}/BASE DATOS CON CIE-10_Actualizada 25-07-2023.xls"
+    ruta_archivo = f"{input_filepath}/Base datos configurada INT (Actualizada 26-05-2023).xls"
     df = pd.read_excel(ruta_archivo)
 
     # Limpieza de la base de datos
@@ -252,8 +252,8 @@ def procesar_base_de_congenitas(input_filepath):
     )
 
     # Convierte los CIE a mayuscula
-    df["cie10"] = df["cie10"].str.upper()
-    df["cie11"] = df["cie11"].str.upper()
+    # df["cie10"] = df["cie10"].str.upper()
+    # df["cie11"] = df["cie11"].str.upper()
 
     # Cambia glosas de sexo
     df["sexo"] = df["sexo"].replace(TRANSFORMACION_SEXO)
