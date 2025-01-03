@@ -1,0 +1,20 @@
+name: int-congenitas
+channels:
+  - https://repo.anaconda.com/pkgs/main
+  - https://repo.anaconda.com/pkgs/r
+  - https://repo.anaconda.com/pkgs/msys2
+  - conda-forge
+dependencies:
+  - ipykernel
+  - matplotlib
+  - numpy
+  - openpyxl
+  - pandas
+  - python
+  - seaborn
+  - click
+  - coverage
+  - flake8
+  - python-dotenv
+  - sphinx
+prefix: C:\Users\jarojas\AppData\Local\anaconda3\envs\int-congenitas
