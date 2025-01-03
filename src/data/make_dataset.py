@@ -7,10 +7,7 @@ from pathlib import Path
 import click
 import numpy as np
 import pandas as pd
-import unidecode
 from dotenv import find_dotenv, load_dotenv
-from nltk.corpus import stopwords
-from nltk.stem import WordNetLemmatizer
 
 load_dotenv(find_dotenv())
 
@@ -229,23 +226,21 @@ def procesar_base_de_congenitas(input_filepath):
     # Limpia los nombres de las columnas
     df = clean_column_names(df)
 
-    # Preprocesamiento de texto
-    df.loc[:, COLS_A_PREPROCESAR_TEXTO] = df.loc[:, COLS_A_PREPROCESAR_TEXTO].apply(
-        preprocesar_columna_texto
-    )
+    # # Preprocesamiento de texto
+    # df.loc[:, COLS_A_PREPROCESAR_TEXTO] = df.loc[:, COLS_A_PREPROCESAR_TEXTO].apply(
+    #     preprocesar_columna_texto
+    # )
 
-    df["SEXO"] = df["SEXO"].replace(TRANSFORMACION_SEXO)
-    df = formatear_columnas_fecha_primera_evaluacion(df)
-    df = formatear_columnas_fecha_nacimiento(df)
-    df = recodificar_cols_dict_de_congenitas(df)
-    df = df.dropna(subset="DIAGNOSTICO PRINCIPAL")
-    df = df[
-        ["Rut"]
-        + COLS_A_PREPROCESAR_TEXTO
-        + ["F NAC", "FECHA 1º evaluación", "ANIO_PRIMERA_EVALUACION", "MES_PRIMERA_EVALUACION"]
-    ]
-
-    df = clean_column_names(df)
+    # df["SEXO"] = df["SEXO"].replace(TRANSFORMACION_SEXO)
+    # df = formatear_columnas_fecha_primera_evaluacion(df)
+    # df = formatear_columnas_fecha_nacimiento(df)
+    # df = recodificar_cols_dict_de_congenitas(df)
+    # df = df.dropna(subset="DIAGNOSTICO PRINCIPAL")
+    # df = df[
+    #     ["Rut"]
+    #     + COLS_A_PREPROCESAR_TEXTO
+    #     + ["F NAC", "FECHA 1º evaluación", "ANIO_PRIMERA_EVALUACION", "MES_PRIMERA_EVALUACION"]
+    # ]
 
     return df
 
