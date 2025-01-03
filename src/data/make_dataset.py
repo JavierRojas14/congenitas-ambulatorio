@@ -71,8 +71,6 @@ TRANSFORMACION_SEXO = {
     "b": "m",
 }
 
-STOPWORDS_ESPANOL = set(stopwords.words("spanish"))
-
 
 def filtrar_palabras_stopword(texto, stopwords_elegidas):
     tokens = texto.split()
@@ -214,13 +212,23 @@ def clean_column_names(df):
     return tmp
 
 
+def limpiar_columna_texto(serie):
+    return (
+        serie.str.upper()
+        .str.strip()
+        .str.normalize("NFD")
+        .str.encode("ascii", "ignore")
+        .str.decode("utf-8")
+    )
+
+
 def procesar_base_de_congenitas(input_filepath):
     # Carga la base de datos
     ruta_archivo = f"{input_filepath}/BASE DATOS CON CIE-10_Actualizada 25-07-2023.xlsx"
     df = pd.read_excel(ruta_archivo)
 
     # Limpieza de la base de datos
-    df = df.dropna(how="all")
+    df = df.dropna(how="all", axis=0)
     df = df.dropna(how="all", axis=1)
 
     # Limpia los nombres de las columnas
