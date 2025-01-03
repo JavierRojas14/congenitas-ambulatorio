@@ -136,22 +136,26 @@ def hashear_columna_texto(serie_texto):
     return serie_hasheada
 
 
-def formatear_columnas_fecha_primera_evaluacion(df):
-    tmp = df.copy()
+def formatear_fecha_primera_evaluacion(serie_fecha):
+    # Creamos una copia de la serie
+    serie_fecha = serie_fecha.copy()
 
-    serie_fecha = df["FECHA 1º evaluación"]
+    # Limpiamos la columna, reemplazando fechas y luego casteandolas
+    serie_fecha = serie_fecha.replace(TRANSFORMACION_FECHAS_PRIMERA_CONSULTA)
+    serie_fecha = pd.to_datetime(serie_fecha)
 
-    fechas_reemplazadas = pd.to_datetime(
-        serie_fecha.replace(TRANSFORMACION_FECHAS_PRIMERA_CONSULTA), dayfirst=True
-    )
-    anio_primera_evaluacion = fechas_reemplazadas.dt.year
-    mes_primera_evaluacion = fechas_reemplazadas.dt.month
+    return serie_fecha
 
-    tmp["FECHA 1º evaluación"] = fechas_reemplazadas
-    tmp["ANIO_PRIMERA_EVALUACION"] = anio_primera_evaluacion
-    tmp["MES_PRIMERA_EVALUACION"] = mes_primera_evaluacion
 
-    return tmp
+def formatear_fecha_nacimiento(serie_fecha):
+    # Creamos una copia de la serie
+    serie_fecha = serie_fecha.copy()
+
+    # Limpiamos la columna, reemplazando fechas y luego casteandolas
+    serie_fecha = serie_fecha.replace(TRANSFORMACION_FECHAS_NACIMIENTO)
+    serie_fecha = pd.to_datetime(serie_fecha, yearfirst=True)
+
+    return serie_fecha
 
 
 def formatear_columnas_fecha_nacimiento(df):
@@ -173,11 +177,11 @@ def recodificar_cols_dict_de_congenitas(df):
 
     traductor_congenitas = pd.ExcelFile("data/external/Trabajo Javier_V1_AH.xlsx")
     cols_a_recodificar = [
-        "DIAGNOSTICO PRINCIPAL",
-        "Region",
-        "Clasificación",
-        "Complejidad",
-        "PREVISION",
+        "diagnostico_principal",
+        "region",
+        "clasificacion",
+        "complejidad",
+        "prevision",
     ]
     for col in cols_a_recodificar:
         df_traductor = pd.read_excel(traductor_congenitas, sheet_name=col).drop(columns="cluster")
@@ -245,11 +249,20 @@ def procesar_base_de_congenitas(input_filepath):
         preprocesar_columna_texto
     )
 
-    # df["SEXO"] = df["SEXO"].replace(TRANSFORMACION_SEXO)
-    # df = formatear_columnas_fecha_primera_evaluacion(df)
-    # df = formatear_columnas_fecha_nacimiento(df)
-    # df = recodificar_cols_dict_de_congenitas(df)
-    # df = df.dropna(subset="DIAGNOSTICO PRINCIPAL")
+    # Cambia glosas de sexo
+    df["sexo"] = df["sexo"].replace(TRANSFORMACION_SEXO)
+
+    # Formatea columna de primera evaluacion
+    df["fecha_1_evaluacion"] = formatear_fecha_primera_evaluacion(df["fecha_1_evaluacion"])
+
+    # Formatea columna de fecha de nacimiento
+    df["f_nac"] = formatear_fecha_nacimiento(df["f_nac"])
+
+    # Recodifica columnas con diccionarios
+    df = recodificar_cols_dict_de_congenitas(df)
+
+    # Elimina registros sin diagnostico principal
+    df = df.dropna(subset="diagnostico_principal")
     # df = df[
     #     ["Rut"]
     #     + COLS_A_PREPROCESAR_TEXTO
