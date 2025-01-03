@@ -226,6 +226,9 @@ def procesar_base_de_congenitas(input_filepath):
     df = df.dropna(how="all")
     df = df.dropna(how="all", axis=1)
 
+    # Limpia los nombres de las columnas
+    df = clean_column_names(df)
+
     # Preprocesamiento de texto
     df.loc[:, COLS_A_PREPROCESAR_TEXTO] = df.loc[:, COLS_A_PREPROCESAR_TEXTO].apply(
         preprocesar_columna_texto
