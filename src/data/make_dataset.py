@@ -7,11 +7,25 @@ from pathlib import Path
 import click
 import numpy as np
 import pandas as pd
+import unidecode
 from dotenv import find_dotenv, load_dotenv
+from nltk.corpus import stopwords
+from nltk.stem import WordNetLemmatizer
 
 load_dotenv(find_dotenv())
 
-COLS_A_PREPROCESAR_TEXTO = os.environ.get("COLS_A_PREPROCESAR_TEXTO").split(",")
+COLS_A_PREPROCESAR_TEXTO = [
+    "diagnostico_principal",
+    "hospital",
+    "sexo",
+    "prevision",
+    "centro_referencia",
+    # "Region",  #
+    "clasificacion",
+    "procedimiento",
+    "complejidad",
+]
+
 COLS_INFO_SENSIBLE = os.environ.get("COLS_INFO_SENSIBLE").split(",")
 RUT_EN_FECHA = os.environ.get("RUT_EN_FECHA")
 
@@ -70,6 +84,8 @@ TRANSFORMACION_SEXO = {
     "df": "f",
     "b": "m",
 }
+
+STOPWORDS_ESPANOL = set(stopwords.words("spanish"))
 
 
 def filtrar_palabras_stopword(texto, stopwords_elegidas):
@@ -212,19 +228,9 @@ def clean_column_names(df):
     return tmp
 
 
-def limpiar_columna_texto(serie):
-    return (
-        serie.str.upper()
-        .str.strip()
-        .str.normalize("NFD")
-        .str.encode("ascii", "ignore")
-        .str.decode("utf-8")
-    )
-
-
 def procesar_base_de_congenitas(input_filepath):
     # Carga la base de datos
-    ruta_archivo = f"{input_filepath}/BASE DATOS CON CIE-10_Actualizada 25-07-2023.xlsx"
+    ruta_archivo = f"{input_filepath}/BASE DATOS CON CIE-10_Actualizada 25-07-2023.xls"
     df = pd.read_excel(ruta_archivo)
 
     # Limpieza de la base de datos
@@ -234,10 +240,10 @@ def procesar_base_de_congenitas(input_filepath):
     # Limpia los nombres de las columnas
     df = clean_column_names(df)
 
-    # # Preprocesamiento de texto
-    # df.loc[:, COLS_A_PREPROCESAR_TEXTO] = df.loc[:, COLS_A_PREPROCESAR_TEXTO].apply(
-    #     preprocesar_columna_texto
-    # )
+    # Preprocesamiento de texto
+    df.loc[:, COLS_A_PREPROCESAR_TEXTO] = df.loc[:, COLS_A_PREPROCESAR_TEXTO].apply(
+        preprocesar_columna_texto
+    )
 
     # df["SEXO"] = df["SEXO"].replace(TRANSFORMACION_SEXO)
     # df = formatear_columnas_fecha_primera_evaluacion(df)
