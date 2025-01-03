@@ -20,6 +20,8 @@ COLS_A_PREPROCESAR_TEXTO = [
     "sexo",
     "prevision",
     "centro_referencia",
+    "cie10",
+    "cie11",
     # "Region",  #
     "clasificacion",
     "procedimiento",
@@ -249,6 +251,10 @@ def procesar_base_de_congenitas(input_filepath):
         preprocesar_columna_texto
     )
 
+    # Convierte los CIE a mayuscula
+    df["cie10"] = df["cie10"].str.upper()
+    df["cie11"] = df["cie11"].str.upper()
+
     # Cambia glosas de sexo
     df["sexo"] = df["sexo"].replace(TRANSFORMACION_SEXO)
 
@@ -267,7 +273,14 @@ def procesar_base_de_congenitas(input_filepath):
 
     # Filtra solamente las columnas a utilizar
     df = df[
-        ["rut"] + COLS_A_PREPROCESAR_TEXTO + ["f_nac", "fecha_1_evaluacion", "anio_1_evaluacion"]
+        ["rut"]
+        + COLS_A_PREPROCESAR_TEXTO
+        + [
+            "f_nac",
+            "fecha_1_evaluacion",
+            "anio_1_evaluacion",
+            "edad_1_evaluacion_op",
+        ]
     ]
 
     # Ordena por la fecha de la primera atencion
