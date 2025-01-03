@@ -203,25 +203,20 @@ def clean_column_names(df):
     return tmp
 
 
-@click.command()
-@click.argument("input_filepath", type=click.Path(exists=True))
-@click.argument("output_filepath", type=click.Path())
-def main(input_filepath, output_filepath):
-    """Runs data processing scripts to turn raw data from (../raw) into
-    cleaned data ready to be analyzed (saved in ../processed).
-    """
-    logger = logging.getLogger(__name__)
-    logger.info("making final data set from raw data")
+def procesar_base_de_congenitas(input_filepath):
+    # Carga la base de datos
+    ruta_archivo = f"{input_filepath}/BASE DATOS CON CIE-10_Actualizada 25-07-2023.xlsx"
+    df = pd.read_excel(ruta_archivo)
 
-    df = pd.read_excel(input_filepath)
-
+    # Limpieza de la base de datos
     df = df.dropna(how="all")
     df = df.dropna(how="all", axis=1)
 
+    # Preprocesamiento de texto
     df.loc[:, COLS_A_PREPROCESAR_TEXTO] = df.loc[:, COLS_A_PREPROCESAR_TEXTO].apply(
         preprocesar_columna_texto
     )
-    df.loc[:, COLS_INFO_SENSIBLE] = df.loc[:, COLS_INFO_SENSIBLE].apply(hashear_columna_texto)
+
     df["SEXO"] = df["SEXO"].replace(TRANSFORMACION_SEXO)
     df = formatear_columnas_fecha_primera_evaluacion(df)
     df = formatear_columnas_fecha_nacimiento(df)
@@ -235,7 +230,25 @@ def main(input_filepath, output_filepath):
 
     df = clean_column_names(df)
 
-    df.to_csv(output_filepath, index=False, errors="replace", encoding="latin-1", sep=";")
+    return df
+
+
+@click.command()
+@click.argument("input_filepath", type=click.Path(exists=True))
+@click.argument("output_filepath", type=click.Path())
+def main(input_filepath, output_filepath):
+    """Runs data processing scripts to turn raw data from (../raw) into
+    cleaned data ready to be analyzed (saved in ../processed).
+    """
+    logger = logging.getLogger(__name__)
+    logger.info("making final data set from raw data")
+
+    # Lee la base de congenitas y la procesa
+    df = procesar_base_de_congenitas(input_filepath)
+
+    # Guarda la base de datos procesada
+    ruta_output = f"{output_filepath}/df_procesada.csv"
+    df.to_csv(ruta_output, index=False, errors="replace", encoding="latin-1", sep=";")
 
 
 if __name__ == "__main__":
