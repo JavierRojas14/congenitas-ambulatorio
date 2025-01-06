@@ -21,4 +21,6 @@ dependencies:
   - nltk
   - unidecode
   - geopandas
+  - pyogrio
+  - pyarrow
 prefix: C:\Users\jarojas\AppData\Local\anaconda3\envs\int-congenitas
