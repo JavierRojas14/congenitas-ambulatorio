@@ -20,4 +20,5 @@ dependencies:
   - xlrd
   - nltk
   - unidecode
+  - geopandas
 prefix: C:\Users\jarojas\AppData\Local\anaconda3\envs\int-congenitas
