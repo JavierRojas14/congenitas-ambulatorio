@@ -109,7 +109,7 @@ def lematizar_texto(texto):
 
 def preprocesar_columna_texto(serie_texto):
     serie_limpia = serie_texto.copy()
-    if serie_texto.name != "PREVISION":
+    if serie_texto.name != "prevision":
         palabras_filtro = STOPWORDS_ESPANOL
 
     else:
