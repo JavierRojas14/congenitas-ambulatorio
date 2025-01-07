@@ -16,6 +16,7 @@ load_dotenv(find_dotenv())
 
 COLS_A_PREPROCESAR_TEXTO = [
     "diagnostico_principal",
+    "direccion",
     "hospital",
     "sexo",
     "prevision",
