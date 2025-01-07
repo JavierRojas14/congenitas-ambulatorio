@@ -16,7 +16,6 @@ load_dotenv(find_dotenv())
 
 COLS_A_PREPROCESAR_TEXTO = [
     "diagnostico_principal",
-    "direccion",
     "hospital",
     "sexo",
     "prevision",
@@ -202,6 +201,16 @@ def agregar_info_codigo_cie(df, columna_con_cie):
     return union
 
 
+def limpiar_columna_texto(serie):
+    return (
+        serie.str.upper()
+        .str.strip()
+        .str.normalize("NFD")
+        .str.encode("ascii", "ignore")
+        .str.decode("utf-8")
+    )
+
+
 def clean_column_names(df):
     """
     Cleans the column names of a DataFrame by converting to lowercase, replacing spaces with
@@ -269,6 +278,9 @@ def procesar_base_de_congenitas(input_filepath):
     # Recodifica columnas con diccionarios
     df = recodificar_cols_dict_de_congenitas(df)
 
+    # Procesa la direccion
+    df["direccion"] = limpiar_columna_texto(df["direccion"])
+
     # Elimina registros sin diagnostico principal
     df = df.dropna(subset="diagnostico_principal")
 
@@ -277,6 +289,7 @@ def procesar_base_de_congenitas(input_filepath):
         ["rut"]
         + COLS_A_PREPROCESAR_TEXTO
         + [
+            "direccion",
             "f_nac",
             "fecha_1_evaluacion",
             "anio_1_evaluacion",
